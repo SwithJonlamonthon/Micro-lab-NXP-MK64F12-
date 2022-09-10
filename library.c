@@ -5,6 +5,7 @@
 void delayMs(int n);
 void ledpin(int a , int b);
 void formation4(int x);
+int keypad()
 
 
 int main(void) {
@@ -99,4 +100,48 @@ void ledpin(int a , int b){  /*This function for RGB LED*/
 			
 			}
 		
+}
+int keypad(){
+	int col,i,x,value = 0;
+	SIM->SCGC5 |= 0x0800;
+	PORTC->PCR[0] = 0x100;
+	PORTC->PCR[1] = 0x100;
+	PORTC->PCR[2] = 0x100;
+	PORTC->PCR[3] = 0x100;
+	PORTC->PCR[8] = 0x100;
+	PORTC->PCR[9] = 0x100;
+	PORTC->PCR[10] = 0x100;
+	PTC->PDDR = 0x000F; /*Set ptc0-ptc3 as input and ptc8-ptc10 as output*/
+	PTC->PDOR = 0x000F;/*init all output as a 1*/
+	while(1){
+		col = 0x0700;
+		for(i = 0;i < 4;i++){
+			PTC->PDOR = !(0x01 << i);
+			delayUS(10);
+			col = PTC->PDIR &0x0700;
+			if(col ==0x600){
+				value = (i * 3)+ 1;
+				
+				}
+			else if(col == 0x500){
+				value = (i * 3)+ 2;
+				
+				}
+			else if(col == 0x300){
+				value = (i * 3)+ 3;
+				
+				}
+			else{
+				value = 0;
+				
+				}
+		return value;
+					
+			
+		}
+			
+		
+	}
+	
+	
 }
