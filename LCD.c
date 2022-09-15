@@ -192,13 +192,14 @@ int main(void) {
 	for(;;){
 		int i;
 		char name [11] = "hello 8 bit";
+		char name2 [12] = "hello 16 bit";
 		LCD_command(0x80);
 		for(i = 0; i < 12;i++){
 			LCD_data(name[i]);
 		}
 		LCD_command(0xc0);
-		for(i = 0; i < 12;i++){
-			LCD_data(name[i]);
+		for(i = 0; i < 13;i++){
+			LCD_data(name2[i]);
 		}
 		delayMs(500);
 	}
