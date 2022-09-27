@@ -19,7 +19,7 @@ int main(void) {
 				/*For falling edge interrupt use 0xA0000 */
 			 /*For rising edge interrupt use 0x90000 */
 			NVIC -> ISER[1] |= 0x20000000;
-      __enable_irq(); /* toggle the red LED continuously */
+      			__enable_irq(); 
 			while(1){
 				PTB -> PTOR |= 0x400000; /* toggle red LED */
 				delayMs(500);
