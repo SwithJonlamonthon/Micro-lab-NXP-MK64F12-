@@ -4,7 +4,7 @@ void delayMs(int n);
 void PORTA_IRQHandler(void);
 void PORTC_IRQHandler(void);
 int main(void) {
-      SIM -> SCGC5 |= 0x2E00; 
+      			SIM -> SCGC5 |= 0x2E00; 
 			PORTB -> PCR[22] = 0x0100; 
 			PORTE -> PCR[26] = 0x0100;
 			PORTC -> PCR[6] = 0x0100;
