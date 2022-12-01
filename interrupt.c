@@ -1,57 +1,129 @@
-#include"MK64F12.h"
+#include "MK64F12.h"
 
+void initPort(void);
+void PORTB_IRQHandler(void);
+void ledpin(int a, int b);
 void delayMs(int n);
-void PORTA_IRQHandler(void);
-void PORTC_IRQHandler(void);
-int main(void) {
-      			SIM -> SCGC5 |= 0x2E00; 
-			PORTB -> PCR[22] = 0x0100; 
-			PORTE -> PCR[26] = 0x0100;
-			PORTC -> PCR[6] = 0x0100;
-			PTB -> PDDR |= 0x0400000;
-			PTE -> PDDR |= 0x04000000; 
-			PTB->PDOR |=0x0400000;
-			PTE -> PDOR |= 0x04000000;
-			PTC -> PDDR &= !0x40;
-			__disable_irq(); /* Step 6.2: disable all IRQs */
-			PORTC -> PCR[6] &= !0xF0000; /*To set isf(24) */
-			PORTC -> PCR[6] |= 0xA0000; 
-				/*For falling edge interrupt use 0xA0000 */
-			 /*For rising edge interrupt use 0x90000 */
-			NVIC -> ISER[1] |= 0x20000000;
-      			__enable_irq(); 
-			while(1){
-				PTB -> PTOR |= 0x400000; /* toggle red LED */
-				delayMs(500);
-			}
-			
-} 
 
-void PORTC_IRQHandler(void){
-	 int i; /* toggle blue LED (PTB21) three times */
-        for (i = 0; i < 3; i++) {
-                PTE -> PDOR &= !0x04000000; /* turn on blue LED */
-                delayMs(100);
-                PTE -> PDOR |= 0x04000000; /* turn off blue LED */
-                delayMs(100);
+int main(void) {
+
+        initPort();
+
+        while (1) {
+                int i = 1;
+                if ((PTB -> PDIR & 0x08) == 0) {
+                        PTA -> PDDR |= 0x02;
+                        while (1) {
+                                if (i != 5) {
+                                        ledpin(1, i);
+                                        delayMs(1000);
+                                        ledpin(0, i);
+                                        i++;
+                                } else {
+                                        i = 1;
+                                }
+
+                        }
+
+                }
+                /*
+		if((PTB->PDIR & 0x0400) == 0){
+			PTA -> PDDR &= !(0x02);
+		
+		}
+	*/
+
         }
-        PORTC -> ISFR = 0x00000040; /* Step clear interrupt flag */
+
 }
 
+void initPort(void) {
+        SIM -> SCGC5 |= (1 << SIM_SCGC5_PORTA_SHIFT) | (1 << SIM_SCGC5_PORTB_SHIFT) | (1 << SIM_SCGC5_PORTD_SHIFT);
+        PORTB -> PCR[3] = 1 << PORT_PCR_MUX_SHIFT;
+        PORTB -> PCR[10] = 1 << PORT_PCR_MUX_SHIFT;
+        PORTA -> PCR[1] = 1 << PORT_PCR_MUX_SHIFT;
+				PTB -> PDDR = !(1 << 10);
+        PTB -> PDDR = !(1 << 3);
+       
+
+        __disable_irq();
+        PORTB -> PCR[10] &= !0xF0000;
+				PORTB ->PCR[10] |= 0x10000; 
+        PORTB -> PCR[10] |= 0x90000;
+        NVIC -> ISER[1] |= 0x10000000;
+        __enable_irq();
+
+}
+
+void PORTB_IRQHandler(void) {
+			ledpin(1,1);
+   
+               
 
 
+}
+
+void ledpin(int a, int b) {
+        /*This function for RGB LED*/
+        PORTD -> PCR[0] = 1 << PORT_PCR_MUX_SHIFT;
+        PORTD -> PCR[1] = 1 << PORT_PCR_MUX_SHIFT;
+        PORTD -> PCR[2] = 1 << PORT_PCR_MUX_SHIFT;
+        PORTD -> PCR[3] = 1 << PORT_PCR_MUX_SHIFT;
+        switch (b) {
+        case 4:
+                /*For D1*/
+                if (a == 1) {
+                        PTD -> PDDR |= (1 << 0);
+
+                } else {
+                        PTD -> PDDR &= !(1 << 0);
+
+                }
+
+                break;
+        case 1:
+                /*For D2*/
+                if (a == 1) {
+                        PTD -> PDDR |= (1 << 1);
+
+                } else {
+                        PTD -> PDDR &= !(1 << 1);
+
+                }
+
+                break;
+        case 3:
+                /*For D3*/
+                if (a == 1) {
+                        PTD -> PDDR |= (1 << 2);
+
+                } else {
+                        PTD -> PDDR &= !(1 << 2);
+
+                }
+
+                break;
+        case 2:
+                /*For D4*/
+                if (a == 1) {
+                        PTD -> PDDR |= (1 << 3);
+
+                } else {
+                        PTD -> PDDR &= !(1 << 3);
+
+                }
+
+                break;
+
+        }
+
+}
 
 void delayMs(int n) {
         int i;
-        int j;
+        SysTick -> LOAD = 20480 - 1;
+        SysTick -> CTRL = 5;
         for (i = 0; i < n; i++)
-                for (j = 0; j < 7000; j++) {}
-									
-								}							
-									
-									
-								
-								
-								
-								
-								
+                while ((SysTick -> CTRL & 0x10000) == 0) {}
+        SysTick -> CTRL = 0;
+}
