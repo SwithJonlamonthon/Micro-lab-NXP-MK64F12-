@@ -46,11 +46,11 @@ void initPort(void) {
         SIM -> SCGC5 |= (1 << SIM_SCGC5_PORTA_SHIFT) | (1 << SIM_SCGC5_PORTB_SHIFT) | (1 << SIM_SCGC5_PORTD_SHIFT);
         PORTB -> PCR[3] = 1 << PORT_PCR_MUX_SHIFT;
         PORTB -> PCR[10] = 1 << PORT_PCR_MUX_SHIFT;
-				PORTB -> PCR[11] = 1 << PORT_PCR_MUX_SHIFT;
+	PORTB -> PCR[11] = 1 << PORT_PCR_MUX_SHIFT;
         PORTA -> PCR[1] = 1 << PORT_PCR_MUX_SHIFT;
-				PTB -> PDDR &= !(1 << 10);
+	PTB -> PDDR &= !(1 << 10);
         PTB -> PDDR &= !(1 << 3);
-				PTB -> PDDR &= !(1 << 11);
+	PTB -> PDDR &= !(1 << 11);
         __disable_irq();
         PORTB->PCR[11] &= ~0xF0000;
         PORTB->PCR[11] |= 0x90000;
