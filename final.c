@@ -79,7 +79,7 @@ void PORTB_IRQHandler(void){
 			ledpin(1,3);
 			ledpin(1,4);
 	}
-		 PORTB -> ISFR = 0x800;
+		 PORTB->ISFR =0x00000010;
 }
 
    
